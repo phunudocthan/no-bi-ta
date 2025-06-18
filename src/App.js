@@ -23,7 +23,7 @@ function App() {
     isGameOver: false,
     isCheckingWin: false,
     gameEnded: false,
-    botMove: null, // Track bot move for animation
+    botMove: null,
   });
 
   const links = {
@@ -45,7 +45,6 @@ function App() {
     );
 
     const validMoves = possibleLinks.filter((linkIndex) => {
-      // Chỉ cho phép di chuyển đến ô trống
       const targetPiece = gameState.boardState[linkIndex].piece;
       const isValid = targetPiece === null;
       console.log(
@@ -113,7 +112,6 @@ function App() {
   const resetRound = () => {
     const nextRound = gameState.round + 1;
 
-    // Trạng thái ban đầu: hai nhân vật của mỗi phe nằm cùng một đường chéo
     const newBoardState = [
       { piece: "human" }, // góc trên trái
       { piece: "wolf" }, // góc trên phải
@@ -122,10 +120,9 @@ function App() {
       { piece: null }, // trung tâm
     ];
 
-    // Nếu round chẵn, hoán đổi vị trí hai phe theo nguyên tắc đường chéo
     if (nextRound % 2 === 0) {
       console.log("Hoán đổi vị trí cho round", nextRound);
-      // Hoán đổi: người ở đường chéo trên trái-dưới phải ↔ sói ở đường chéo trên phải-dưới trái
+
       newBoardState[0].piece = "wolf"; // góc trên trái -> sói
       newBoardState[1].piece = "human"; // góc trên phải -> người
       newBoardState[2].piece = "human"; // góc dưới trái -> người
@@ -177,15 +174,12 @@ function App() {
   };
 
   const handleTileClick = (fromIndex, toIndex) => {
-    // Không cho phép di chuyển khi game đã kết thúc
     if (gameState.gameEnded) return;
 
-    // Nếu chỉ có fromIndex, đây là click thông thường
     if (toIndex === undefined) {
       const piece = gameState.boardState[fromIndex].piece;
 
       if (gameState.selectedIndex === null) {
-        // Chọn quân
         if (piece === gameState.turn) {
           setGameState((prev) => ({
             ...prev,
@@ -195,16 +189,13 @@ function App() {
       } else {
         const moveOptions = getMovablePositions(gameState.selectedIndex);
         if (moveOptions.includes(fromIndex)) {
-          // Di chuyển quân
           movePiece(gameState.selectedIndex, fromIndex);
         } else if (piece === gameState.turn) {
-          // Nếu click vào quân cùng phe, chọn quân mới
           setGameState((prev) => ({
             ...prev,
             selectedIndex: fromIndex,
           }));
         } else {
-          // Bỏ chọn
           setGameState((prev) => ({
             ...prev,
             selectedIndex: null,
@@ -212,7 +203,6 @@ function App() {
         }
       }
     } else {
-      // Đây là drag-drop hoặc bot move
       const piece = gameState.boardState[fromIndex].piece;
       if (piece === gameState.turn) {
         const moveOptions = getMovablePositions(fromIndex);
@@ -223,7 +213,6 @@ function App() {
     }
   };
 
-  // Thêm callback
   const handleBotMoveAnimationEnd = (fromIndex, toIndex) => {
     movePiece(fromIndex, toIndex);
     setGameState((prev) => ({
@@ -232,7 +221,6 @@ function App() {
     }));
   };
 
-  // Sửa handleBotMove chỉ set botMove, không movePiece và không setTimeout nữa
   const handleBotMove = (fromIndex, toIndex) => {
     const piece = gameState.boardState[fromIndex].piece;
     if (piece && !gameState.boardState[toIndex].piece) {
@@ -244,18 +232,15 @@ function App() {
     }
   };
 
-  // Bot cho sói
   useEffect(() => {
     if (gameState.turn === "wolf" && !gameState.gameEnded) {
       const makeWolfMove = () => {
-        // Tìm tất cả các quân sói
         const wolfPositions = gameState.boardState
           .map((pos, index) => (pos.piece === "wolf" ? index : null))
           .filter((pos) => pos !== null);
 
         console.log("Wolf positions:", wolfPositions);
 
-        // Tìm tất cả các nước đi có thể
         const possibleMoves = wolfPositions.flatMap((fromIndex) => {
           const destinations = getMovablePositions(fromIndex);
           console.log(`Wolf at ${fromIndex} can move to:`, destinations);
@@ -265,34 +250,28 @@ function App() {
         console.log("All possible wolf moves:", possibleMoves);
 
         if (possibleMoves.length > 0) {
-          // Chọn ngẫu nhiên một nước đi
           const randomMove =
             possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
           console.log("Wolf making move:", randomMove);
 
-          // Sử dụng handleBotMove để có animation
           handleBotMove(randomMove.fromIndex, randomMove.toIndex);
         } else {
           console.log("Wolf has no valid moves, switching turn");
-          // Nếu không có nước đi hợp lệ, chuyển lượt
           switchTurn();
         }
       };
 
-      // Đợi 500ms trước khi bot đi để người chơi có thể thấy được
       const timer = setTimeout(makeWolfMove, 500);
       return () => clearTimeout(timer);
     }
   }, [gameState.turn]);
 
-  // Thêm useEffect để kiểm tra thắng thua sau khi cả hai phe đã đi
   useEffect(() => {
     if (
       gameState.turn === "human" &&
       !gameState.isCheckingWin &&
       !gameState.gameEnded
     ) {
-      // Đợi một chút để đảm bảo board state đã được cập nhật
       setTimeout(() => {
         const humanPieces = getAllPieces("human");
         const wolfPieces = getAllPieces("wolf");
@@ -317,7 +296,6 @@ function App() {
         console.log("Human can move:", humanCanMove);
         console.log("Wolf can move:", wolfCanMove);
 
-        // Kiểm tra thắng thua sau khi sói đã đi xong
         if (!humanCanMove || !wolfCanMove) {
           setGameState((prev) => ({
             ...prev,
@@ -331,7 +309,6 @@ function App() {
               log: "Hòa round! 🤝",
             }));
 
-            // Kiểm tra điều kiện kết thúc game
             setTimeout(() => {
               const currentHumanScore = gameState.humanScore;
               const currentWolfScore = gameState.wolfScore;
@@ -344,7 +321,6 @@ function App() {
               );
 
               if (currentHumanScore >= 2 || currentWolfScore >= 2) {
-                // Một bên đã thắng 2 round
                 setGameState((prev) => ({
                   ...prev,
                   gameEnded: true,
@@ -367,7 +343,6 @@ function App() {
                 currentHumanScore === 1 &&
                 currentWolfScore === 1
               ) {
-                // Đến round 2 mà mỗi bên 1 round thì hòa
                 setGameState((prev) => ({
                   ...prev,
                   gameEnded: true,
@@ -378,7 +353,6 @@ function App() {
                   currentWolfScore
                 );
               } else {
-                // Tiếp tục round tiếp theo
                 setGameState((prev) => ({
                   ...prev,
                   log: "Hòa round! 🤝 - Nhấn bất kỳ đâu để tiếp tục...",
@@ -395,7 +369,6 @@ function App() {
             }));
 
             setTimeout(() => {
-              // Kiểm tra điều kiện kết thúc game
               const currentHumanScore = gameState.humanScore;
               const currentWolfScore = newWolfScore;
 
@@ -407,7 +380,6 @@ function App() {
               );
 
               if (currentHumanScore >= 2 || currentWolfScore >= 2) {
-                // Một bên đã thắng 2 round
                 setGameState((prev) => ({
                   ...prev,
                   gameEnded: true,
@@ -430,7 +402,6 @@ function App() {
                 currentHumanScore === 1 &&
                 currentWolfScore === 1
               ) {
-                // Đến round 2 mà mỗi bên 1 round thì hòa
                 setGameState((prev) => ({
                   ...prev,
                   gameEnded: true,
@@ -441,7 +412,6 @@ function App() {
                   currentWolfScore
                 );
               } else {
-                // Tiếp tục round tiếp theo
                 setGameState((prev) => ({
                   ...prev,
                   log: "Sói thắng round! 🐺 - Nhấn bất kỳ đâu để tiếp tục...",
@@ -458,7 +428,6 @@ function App() {
             }));
 
             setTimeout(() => {
-              // Kiểm tra điều kiện kết thúc game
               const currentHumanScore = newHumanScore;
               const currentWolfScore = gameState.wolfScore;
 
@@ -470,7 +439,6 @@ function App() {
               );
 
               if (currentHumanScore >= 2 || currentWolfScore >= 2) {
-                // Một bên đã thắng 2 round
                 setGameState((prev) => ({
                   ...prev,
                   gameEnded: true,
@@ -493,7 +461,6 @@ function App() {
                 currentHumanScore === 1 &&
                 currentWolfScore === 1
               ) {
-                // Đến round 2 mà mỗi bên 1 round thì hòa
                 setGameState((prev) => ({
                   ...prev,
                   gameEnded: true,
@@ -504,7 +471,6 @@ function App() {
                   currentWolfScore
                 );
               } else {
-                // Tiếp tục round tiếp theo
                 setGameState((prev) => ({
                   ...prev,
                   log: "Người thắng round! 👧 - Nhấn bất kỳ đâu để tiếp tục...",
@@ -517,9 +483,7 @@ function App() {
     }
   }, [gameState.turn, gameState.boardState]);
 
-  // Thêm event handler cho toàn bộ App
   const handleAppClick = (e) => {
-    // Nếu đang chờ người chơi nhấn để tiếp tục round
     if (gameState.log.includes("Nhấn bất kỳ đâu để tiếp tục")) {
       resetRound();
       return;
