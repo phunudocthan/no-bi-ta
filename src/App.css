@@ -1,0 +1,267 @@
+.background-full {
+  min-height: 100vh;
+  min-width: 100vw;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  background-image: url('./assets/Background.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.App {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 40px 0 40px;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.App h1 {
+  margin: 16px 0 8px;
+  color: rgb(31, 121, 196);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 2.5em;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: pulse 0.5s ease-in-out;
+}
+
+.game-info {
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #8FBC8F, #90EE90);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  border: 2px solid #556B2F;
+}
+
+.score-board {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 30px;
+  background: linear-gradient(135deg, #F5DEB3, #DEB887);
+  border-radius: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 2px solid #D2691E;
+}
+
+.score {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.score span {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 5px 15px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #98FB98, #90EE90);
+  color: #2F4F2F;
+  border: 1px solid #228B22;
+}
+
+.round {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #8B4513;
+}
+
+.log {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #2F4F2F;
+  padding: 10px;
+  background: linear-gradient(135deg, #F0E68C, #e4c202);
+  border-radius: 8px;
+  margin-top: 10px;
+  word-wrap: break-word;
+  border: 1px solid #836415;
+}
+
+.game-over-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #8FBC8F, #90EE90);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: modalAppear 0.3s ease-out;
+  margin: 20px;
+  max-width: 90%;
+  border: 3px solid #556B2F;
+}
+
+@keyframes modalAppear {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #2F4F2F;
+}
+
+.modal-content button {
+  padding: 10px 25px;
+  font-size: 1.1em;
+  background: linear-gradient(135deg, #F5DEB3, #DEB887);
+  color: #8B4513;
+  border: 2px solid #D2691E;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+}
+
+.modal-content button:hover {
+  background: linear-gradient(135deg, #DEB887, #D2691E);
+  color: #2F4F2F;
+  transform: scale(1.05);
+}
+
+.final-score {
+  margin: 20px 0;
+}
+
+.final-score p {
+  font-size: 1.2em;
+  margin: 10px 0;
+  padding: 10px;
+  background: linear-gradient(135deg, #F0E68C, #e4c202);
+  border-radius: 5px;
+  color: #2F4F2F;
+  border: 1px solid #836415;
+  font-weight: bold;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .App {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 5px !important;
+    margin-top: 0px !important;
+    transform: translateY(-30px) !important;
+  }
+  
+  .game-info {
+    order: -1 !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+    max-width: 300px !important;
+  }
+  
+  .score-board {
+    flex-direction: column !important;
+    gap: 0px !important;
+    padding: 10px !important;
+  }
+  
+  .score {
+    gap: 10px !important;
+  }
+  
+  .score span {
+    font-size: 0.9em !important;
+    padding: 6px 10px !important;
+  }
+  
+  .round {
+    font-size: 0.9em !important;
+  }
+  
+  .log {
+    font-size: 1em !important;
+    padding: 8px !important;
+  }
+  
+  .App h1 {
+    font-size: 2em;
+    margin: 10px 0;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-content h2 {
+    font-size: 1.5em;
+  }
+  
+  .modal-content button {
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+  
+  .final-score p {
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding: 5px;
+  }
+  
+  .App h1 {
+    font-size: 1.5em;
+  }
+  
+  .game-info {
+    padding: 10px;
+  }
+  
+  .score span {
+    font-size: 0.9em;
+    padding: 6px 10px;
+  }
+  
+  .log {
+    font-size: 1em;
+  }
+} 
