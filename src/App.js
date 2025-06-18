@@ -507,7 +507,7 @@ function App() {
     modal.className = "game-over-modal";
     modal.innerHTML = `
       <div class="modal-content">
-        <h2>🎉 Xin chào người ở trước màn hinh :3 🎉</h2>
+        <h2>🎉 Xin chào người ở trước màn hình :3 🎉</h2>
         <div class="final-score">
           <p>🤯Tụi mình là nhóm 5 của lớp EXE101_G03🤯</p>
           <p> Tụi mình hi vọng bạn có</p>
