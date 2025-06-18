@@ -66,6 +66,12 @@
   flex-wrap: wrap;
   gap: 10px;
   border: 2px solid #D2691E;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.score-board:hover {
+  transform: scale(1.02);
 }
 
 .score {

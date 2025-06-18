@@ -26,6 +26,8 @@ function App() {
     botMove: null,
   });
 
+  const [scoreboardClicks, setScoreboardClicks] = useState(0);
+
   const links = {
     0: [1, 4], // góc trên trái -> góc trên phải, trung tâm
     1: [0, 3, 4], // góc trên phải -> góc trên trái, dưới phải, trung tâm
@@ -490,6 +492,37 @@ function App() {
     }
   };
 
+  const handleScoreboardClick = () => {
+    const newClicks = scoreboardClicks + 1;
+    setScoreboardClicks(newClicks);
+
+    if (newClicks === 5) {
+      showEasterEggModal();
+      setScoreboardClicks(0);
+    }
+  };
+
+  const showEasterEggModal = () => {
+    const modal = document.createElement("div");
+    modal.className = "game-over-modal";
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h2>🎉 Xin chào người ở trước màn hinh :3 🎉</h2>
+        <div class="final-score">
+          <p>🤯Tụi mình là nhóm 5 của lớp EXE101_G03🤯</p>
+          <p> Tụi mình hi vọng bạn có</p>
+          <p> một trải nghiệm vui vẻ với game này</p>
+          <p> ------------------------------ </p>
+          <p> Thiết kế: Nguyễn Trường An </p>
+          <p> Dựng game: Nguyễn Phúc An </p>
+          <p> 💅Miniproject được cả nhóm approve💅 </p>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove();">Đóng</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  };
+
   return (
     <div className="background-full">
       <div className="App" onClick={handleAppClick}>
@@ -502,7 +535,7 @@ function App() {
           onBotMoveAnimationEnd={handleBotMoveAnimationEnd}
         />
         <div className="game-info">
-          <div className="score-board">
+          <div className="score-board" onClick={handleScoreboardClick}>
             <div className="score">
               <span>👧 Người: {gameState.humanScore}</span>
               <span>🐺 Sói: {gameState.wolfScore}</span>
