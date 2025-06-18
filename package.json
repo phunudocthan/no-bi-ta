@@ -1,7 +1,7 @@
 {
   "name": "nguoi-vs-soi-game",
   "version": "1.0.0",
-  "description": "Mini board game - Người vs Sói",
+  "description": "Mini board game",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
