@@ -17,9 +17,6 @@ function App() {
     selectedIndex: null,
     turn: "human",
     log: "Lượt người chơi 👧",
-    round: 1,
-    humanScore: 0,
-    wolfScore: 0,
     isGameOver: false,
     isCheckingWin: false,
     gameEnded: false,
@@ -90,9 +87,6 @@ function App() {
       turn: "human",
       selectedIndex: null,
       log: "Lượt: Người 👧",
-      round: 1,
-      humanScore: 0,
-      wolfScore: 0,
       isGameOver: false,
       isCheckingWin: false,
       gameEnded: false,
@@ -110,52 +104,12 @@ function App() {
     }));
   };
 
-  const resetRound = () => {
-    const nextRound = gameState.round + 1;
-
-    // Trạng thái ban đầu: hai nhân vật của mỗi phe nằm cùng một đường chéo
-    const newBoardState = [
-      { piece: "human" }, // góc trên trái
-      { piece: "wolf" }, // góc trên phải
-      { piece: "wolf" }, // góc dưới trái
-      { piece: "human" }, // góc dưới phải
-      { piece: null }, // trung tâm
-    ];
-
-    // Nếu round chẵn, hoán đổi vị trí hai phe theo nguyên tắc đường chéo
-    if (nextRound % 2 === 0) {
-      console.log("Hoán đổi vị trí cho round", nextRound);
-      // Hoán đổi: người ở đường chéo trên trái-dưới phải ↔ sói ở đường chéo trên phải-dưới trái
-      newBoardState[0].piece = "wolf"; // góc trên trái -> sói
-      newBoardState[1].piece = "human"; // góc trên phải -> người
-      newBoardState[2].piece = "human"; // góc dưới trái -> người
-      newBoardState[3].piece = "wolf"; // góc dưới phải -> sói
-      newBoardState[4].piece = null; // giữ ô trống ở giữa
-    }
-
-    setGameState((prev) => ({
-      ...prev,
-      boardState: newBoardState,
-      selectedIndex: null,
-      turn: "human",
-      log: `Round ${nextRound}: Lượt người chơi 👧`,
-      round: nextRound,
-      isGameOver: false,
-      isCheckingWin: false,
-      gameEnded: false,
-    }));
-  };
-
-  const showGameOverModal = (message, humanScore, wolfScore) => {
+  const showGameOverModal = (message) => {
     const modal = document.createElement("div");
     modal.className = "game-over-modal";
     modal.innerHTML = `
       <div class="modal-content">
         <h2>${message}</h2>
-        <div class="final-score">
-          <p>👧 Người: ${humanScore}</p>
-          <p>🐺 Sói: ${wolfScore}</p>
-        </div>
         <button onclick="window.location.reload();">Chơi lại</button>
       </div>
     `;
@@ -325,191 +279,49 @@ function App() {
           }));
 
           if (!humanCanMove && !wolfCanMove) {
-            console.log("Hòa round!");
+            console.log("Hòa!");
             setGameState((prev) => ({
               ...prev,
-              log: "Hòa round! 🤝",
+              log: "Hòa! 🤝",
             }));
 
-            // Kiểm tra điều kiện kết thúc game
+            // Kết thúc game ngay lập tức
             setTimeout(() => {
-              const currentHumanScore = gameState.humanScore;
-              const currentWolfScore = gameState.wolfScore;
-
-              console.log(
-                "Current scores - Human:",
-                currentHumanScore,
-                "Wolf:",
-                currentWolfScore
-              );
-
-              if (currentHumanScore >= 3 || currentWolfScore >= 3) {
-                // Một bên đã thắng 3 round
-                setGameState((prev) => ({
-                  ...prev,
-                  gameEnded: true,
-                }));
-                if (currentHumanScore >= 3) {
-                  showGameOverModal(
-                    "Người thắng chung cuộc! 👑",
-                    currentHumanScore,
-                    currentWolfScore
-                  );
-                } else {
-                  showGameOverModal(
-                    "Sói thắng chung cuộc! 👑",
-                    currentHumanScore,
-                    currentWolfScore
-                  );
-                }
-              } else if (
-                gameState.round >= 4 &&
-                currentHumanScore === 2 &&
-                currentWolfScore === 2
-              ) {
-                // Đến round 4 mà mỗi bên 2 round thì hòa
-                setGameState((prev) => ({
-                  ...prev,
-                  gameEnded: true,
-                }));
-                showGameOverModal(
-                  "Hòa chung cuộc! 🤝",
-                  currentHumanScore,
-                  currentWolfScore
-                );
-              } else {
-                // Tiếp tục round tiếp theo
-                setGameState((prev) => ({
-                  ...prev,
-                  log: "Hòa round! 🤝 - Nhấn bất kỳ đâu để tiếp tục...",
-                }));
-              }
+              setGameState((prev) => ({
+                ...prev,
+                gameEnded: true,
+              }));
+              showGameOverModal("Hòa! 🤝");
             }, 2000);
           } else if (!humanCanMove) {
-            console.log("Sói thắng round!");
-            const newWolfScore = gameState.wolfScore + 1;
+            console.log("Sói thắng!");
             setGameState((prev) => ({
               ...prev,
-              log: "Sói thắng round! 🐺 - Người hết nước đi!",
-              wolfScore: newWolfScore,
+              log: "Sói thắng! 🐺 - Người hết nước đi!",
             }));
 
+            // Kết thúc game ngay lập tức
             setTimeout(() => {
-              // Kiểm tra điều kiện kết thúc game
-              const currentHumanScore = gameState.humanScore;
-              const currentWolfScore = newWolfScore;
-
-              console.log(
-                "After wolf win - Human:",
-                currentHumanScore,
-                "Wolf:",
-                currentWolfScore
-              );
-
-              if (currentHumanScore >= 3 || currentWolfScore >= 3) {
-                // Một bên đã thắng 3 round
-                setGameState((prev) => ({
-                  ...prev,
-                  gameEnded: true,
-                }));
-                if (currentHumanScore >= 3) {
-                  showGameOverModal(
-                    "Người thắng chung cuộc! 👑",
-                    currentHumanScore,
-                    currentWolfScore
-                  );
-                } else {
-                  showGameOverModal(
-                    "Sói thắng chung cuộc! 👑",
-                    currentHumanScore,
-                    currentWolfScore
-                  );
-                }
-              } else if (
-                gameState.round >= 4 &&
-                currentHumanScore === 2 &&
-                currentWolfScore === 2
-              ) {
-                // Đến round 4 mà mỗi bên 2 round thì hòa
-                setGameState((prev) => ({
-                  ...prev,
-                  gameEnded: true,
-                }));
-                showGameOverModal(
-                  "Hòa chung cuộc! 🤝",
-                  currentHumanScore,
-                  currentWolfScore
-                );
-              } else {
-                // Tiếp tục round tiếp theo
-                setGameState((prev) => ({
-                  ...prev,
-                  log: "Sói thắng round! 🐺 - Nhấn bất kỳ đâu để tiếp tục...",
-                }));
-              }
+              setGameState((prev) => ({
+                ...prev,
+                gameEnded: true,
+              }));
+              showGameOverModal("Sói thắng! 🐺");
             }, 2000);
           } else if (!wolfCanMove) {
-            console.log("Người thắng round!");
-            const newHumanScore = gameState.humanScore + 1;
+            console.log("Người thắng!");
             setGameState((prev) => ({
               ...prev,
-              log: "Người thắng round! 👧 - Sói hết nước đi!",
-              humanScore: newHumanScore,
+              log: "Người thắng! 👧 - Sói hết nước đi!",
             }));
 
+            // Kết thúc game ngay lập tức
             setTimeout(() => {
-              // Kiểm tra điều kiện kết thúc game
-              const currentHumanScore = newHumanScore;
-              const currentWolfScore = gameState.wolfScore;
-
-              console.log(
-                "After human win - Human:",
-                currentHumanScore,
-                "Wolf:",
-                currentWolfScore
-              );
-
-              if (currentHumanScore >= 3 || currentWolfScore >= 3) {
-                // Một bên đã thắng 3 round
-                setGameState((prev) => ({
-                  ...prev,
-                  gameEnded: true,
-                }));
-                if (currentHumanScore >= 3) {
-                  showGameOverModal(
-                    "Người thắng chung cuộc! 👑",
-                    currentHumanScore,
-                    currentWolfScore
-                  );
-                } else {
-                  showGameOverModal(
-                    "Sói thắng chung cuộc! 👑",
-                    currentHumanScore,
-                    currentWolfScore
-                  );
-                }
-              } else if (
-                gameState.round >= 4 &&
-                currentHumanScore === 2 &&
-                currentWolfScore === 2
-              ) {
-                // Đến round 4 mà mỗi bên 2 round thì hòa
-                setGameState((prev) => ({
-                  ...prev,
-                  gameEnded: true,
-                }));
-                showGameOverModal(
-                  "Hòa chung cuộc! 🤝",
-                  currentHumanScore,
-                  currentWolfScore
-                );
-              } else {
-                // Tiếp tục round tiếp theo
-                setGameState((prev) => ({
-                  ...prev,
-                  log: "Người thắng round! 👧 - Nhấn bất kỳ đâu để tiếp tục...",
-                }));
-              }
+              setGameState((prev) => ({
+                ...prev,
+                gameEnded: true,
+              }));
+              showGameOverModal("Người thắng! 👧");
             }, 2000);
           }
         }
@@ -521,7 +333,7 @@ function App() {
   const handleAppClick = (e) => {
     // Nếu đang chờ người chơi nhấn để tiếp tục round
     if (gameState.log.includes("Nhấn bất kỳ đâu để tiếp tục")) {
-      resetRound();
+      resetGame();
       return;
     }
   };
@@ -538,13 +350,6 @@ function App() {
           onBotMoveAnimationEnd={handleBotMoveAnimationEnd}
         />
         <div className="game-info">
-          <div className="score-board">
-            <div className="score">
-              <span>👧 Người: {gameState.humanScore}</span>
-              <span>🐺 Sói: {gameState.wolfScore}</span>
-            </div>
-            <div className="round">Round: {gameState.round}/4</div>
-          </div>
           <div className="log">{gameState.log}</div>
         </div>
       </div>
